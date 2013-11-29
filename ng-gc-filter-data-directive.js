@@ -3,15 +3,16 @@
 angular.module('gc.filterDataDirective', [
   'gc.clearFilterDataDirective'
 ]).directive('filterData', [
-  '$location',
-  function filterDataDirective($location) {
+  '$location', '$parse',
+  function filterDataDirective($location, $parse) {
 
     return {
       require: 'ngModel',
       link: function(scope, elm, attrs, ctrl) {
+        var filterDataGetter = $parse(attrs.filterData);
 
         // Get filter key - can be a string attr or parsed from an expression
-        var filterKey = scope.$eval(attrs.filterData) || attrs.filterData;
+        var filterKey = filterDataGetter() || attrs.filterData;
         var isObject = angular.isObject(filterKey);
         if (isObject) {
           filterKey = Object.keys(filterKey)[0];
@@ -25,7 +26,11 @@ angular.module('gc.filterDataDirective', [
 
         // Allows us to run the model value through a filter
         function getModelValue() {
-          return isObject ? scope.$eval(attrs.filterData)[filterKey]
+          // Assign model value to filter key in the filterData attr object
+          // eg. filter-data={ before: before | someFilter }
+          var context = {};
+          context[filterKey] = ctrl.$modelValue;
+          return isObject ? filterDataGetter(context)[filterKey]
                           : ctrl.$modelValue;
         }
 

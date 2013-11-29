@@ -50,7 +50,7 @@ describe('filterDataDirective', function() {
   describe('with a filter name and value', function() {
     sharedExamplesFor(
       '<form name="form">' +
-        '<input filter-data="{ name: value }" ' +
+        '<input filter-data="{ name: name }" ' +
          'ng-model="value" ' +
          'name="filterInput">' +
       '</form>'
